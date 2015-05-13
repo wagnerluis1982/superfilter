@@ -47,17 +47,51 @@ converte-se no seguinte LaTeX
 \end{figure}
 ```
 
-Âncoras e Links de referência
------------------------------
+Âncoras
+-------
 
-Para escrever âncoras ou links de referência em qualquer parte do texto, basta
-escrever como segue a tabela abaixo.
+Define uma âncora no texto que pode ser referenciada mais tarde. Para definir
+uma âncora, escreva
 
-| Elemento    | Markdown                 | LaTeX                  |
-|-------------|--------------------------|------------------------|
-| Âncora      | `^[#sec:anchor]`         | `\label{sec:anchor}`   |
-| Referência  | `[](#sec:anchor)`        | `\ref{sec:anchor}`     |
-| Ref. Página | `[](#sec:anchor "page")` | `\pageref{sec:anchor}` |
+```markdown
+^[#sec:intro]
+```
+
+que se tornará em LaTeX
+
+```latex
+\label{sec:intro}
+```
+
+Links de referência
+-------------------
+
+Faz referência à uma âncora definida previsamente. Uma referência é feita
+escrevendo
+
+```markdown
+[](#sec:intro)
+```
+
+e quando o filtro for aplicado vira o LaTeX
+
+```latex
+\ref{sec:intro}
+```
+
+### Referência de página
+
+Podemos referenciar a página, usando
+
+```markdown
+[](#sec:intro "page")
+```
+
+que se converte em LaTeX para
+
+```latex
+\pageref{sec:intro}
+```
 
 Math com âncoras
 ----------------
