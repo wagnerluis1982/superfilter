@@ -47,14 +47,20 @@ converte-se no seguinte LaTeX
 \end{figure}
 ```
 
-Âncoras
--------
+Âncoras e Referências
+---------------------
 
-Define uma âncora no texto que pode ser referenciada mais tarde. Para definir
-uma âncora, escreva
+Uma âncora define um rótulo no texto que pode ser referenciado mais tarde
+utilizando links de referência. Existem dois tipos de links de referência: um
+para os números das seções, figuras e tabelas, e outro para referenciar a página
+em que a âncora está definida.
+
+### Âncoras
+
+Para definir uma âncora, escreva
 
 ```markdown
-^[#sec:intro]
+<anchor:#sec:intro>
 ```
 
 que se tornará em LaTeX
@@ -62,18 +68,15 @@ que se tornará em LaTeX
 ```latex
 \label{sec:intro}
 ```
+### Referências
 
-Links de referência
--------------------
-
-Faz referência à uma âncora definida previsamente. Uma referência é feita
-escrevendo
+Uma referência é feita escrevendo
 
 ```markdown
-[](#sec:intro)
+<ref:#sec:intro>
 ```
 
-e quando o filtro for aplicado vira o LaTeX
+e quando o filtro for aplicado vira em LaTeX
 
 ```latex
 \ref{sec:intro}
@@ -84,7 +87,7 @@ e quando o filtro for aplicado vira o LaTeX
 Podemos referenciar a página, usando
 
 ```markdown
-[](#sec:intro "page")
+<pageref:#sec:intro>
 ```
 
 que se converte em LaTeX para
