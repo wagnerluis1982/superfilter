@@ -85,22 +85,21 @@ def do_filter(k, v, f, m):
             caption = v[0]['c'][0]
             return put_figure(uri, caption)
 
-    # Anchor (\label)
-    elif k == "Note" and v[0]['c']:
-        note = v[0]['c'][0]['c']
-        if isinstance(note, basestring) and note.startswith("#"):
-            anchor = note[1:]
-            return [inlatex(r'\label{%s}' % anchor)]
+    elif k == "RawInline" and v[0] == "html":
+        # Anchor (\label)
+        m = re.match(r'^<anchor:#(.*?)>', v[1])
+        if m:
+            return [inlatex(r'\label{%s}' % m.group(1))]
 
-    # Reference link (\ref)
-    elif k == "Link" and not v[0] and v[1][0]:
-        link, spec = v[1]
-        if link.startswith("#"):
-            link = link[1:]
-            if spec == "page":
-                return [inlatex(r'\pageref{%s}' % link)]
-            else:
-                return [inlatex(r'\ref{%s}' % link)]
+        # Reference link (\ref)
+        m = re.match(r'^<ref:#(.*?)>', v[1])
+        if m:
+            return [inlatex(r'\ref{%s}' % m.group(1))]
+
+        # Page reference link (\pageref)
+        m = re.match(r'^<pageref:#(.*?)>', v[1])
+        if m:
+            return [inlatex(r'\pageref{%s}' % m.group(1))]
 
     # Math with anchors
     elif k == "Math" and v[0]['t'] == "DisplayMath":
