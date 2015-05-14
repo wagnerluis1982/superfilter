@@ -4,6 +4,14 @@ superfilter.py
 Vários funcionalidades para ser usado no pandoc na geração de LaTeX. Segue
 abaixo o que o filtro faz.
 
+Modo de usar
+------------
+
+Para usar o `superfilter.py`, basta utilizar o parâmetro `--filter` no pandoc
+escolhendo o caminho do script
+
+    $ pandoc --filter ./superfilter.py paper.mkd -o paper.pdf
+
 Imagens com a largura informada
 -------------------------------
 
