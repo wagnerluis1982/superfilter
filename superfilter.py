@@ -59,6 +59,13 @@ def put_figure(uri, caption):
                 latex(r'\end{figure%s}' % star)]
 
 
+def split(s, sep, maxsplit):
+    explode = s.split(sep, maxsplit)
+    while len(explode) <= maxsplit:
+        explode.append('')
+    return explode
+
+
 def do_filter(k, v, f, m):
     if k == "Para":
         if f == 'beamer':
@@ -114,6 +121,22 @@ def do_filter(k, v, f, m):
             return inlatex(r'\begin{equation}\label{%s}'
                            '\n%s\n'
                            r'\end{equation}' % (anchor, math))
+
+    # Special citations
+    elif k == "Cite":
+        kind = ''
+        citations = []
+        for bib in v[0]:
+            citeid, ki = split(bib['citationId'], '#', 1)
+            kind = ki or kind
+            citations.append(citeid)
+            bib['citationId'] = citeid
+
+        bibid = ','.join(citations)
+        if kind:
+            return inlatex(r'\cite%s{%s}' % (kind, bibid))
+        else:
+            return pf.Cite(*v)
 
 
 # flags
