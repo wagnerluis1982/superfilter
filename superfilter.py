@@ -68,7 +68,7 @@ def put_figure(uri, caption):
         uri = uri[1:]
 
     options = None
-    uri_has_args = re.findall(r'^(.*?)(?:%20)*\|(?:%20)*(.*)$', uri)
+    uri_has_args = re.findall(r'^(.*?)(?:%20)*%7C(?:%20)*(.*)$', uri)
     if uri_has_args:
         uri, args = uri_has_args[0]
         options = parse_options(args)
@@ -85,7 +85,7 @@ def put_subfigures(images):
     options = {'width': '1'}
     for (uri, caption) in images:
         subopts = {'width': '1'}
-        uri_has_args = re.findall(r'^(.*?)(?:%20)*\|(?:%20)*(.*)$', uri)
+        uri_has_args = re.findall(r'^(.*?)(?:%20)*%7C(?:%20)*(.*)$', uri)
         if uri_has_args:
             uri, args = uri_has_args[0]
             subopts = parse_options(args)
