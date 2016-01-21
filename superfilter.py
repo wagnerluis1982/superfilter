@@ -36,13 +36,20 @@ def inlatex(s):
 
 def put_image(uri, options):
     if options:
-        width = options['width']
-        if re.match(r'^%s$' % RE_FLOAT, width):
-            return latex(r'\includegraphics[width=%s\linewidth]{%s}' %
-                         (width, uri))
-        else:
-            return latex(r'\includegraphics[width=%s]{%s}' %
-                         (width, uri))
+        graphargs = []
+        if 'width' in options:
+            width = options['width']
+            if re.match(r'^%s$' % RE_FLOAT, width):
+                graphargs.append(r'width=%s\linewidth' % width)
+            else:
+                graphargs.append(r'width=%s' % width)
+        elif 'height' in options:
+            height = options['height']
+            if re.match(r'^%s$' % RE_FLOAT, height):
+                graphargs.append(r'height=%s\textheight' % height)
+            else:
+                graphargs.append(r'height=%s' % height)
+        return latex(r'\includegraphics[%s]{%s}' % (','.join(graphargs), uri))
     else:
         return latex(r'\includegraphics{%s}' % uri)
 
