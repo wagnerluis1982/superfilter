@@ -173,9 +173,9 @@ def do_filter(k, v, f, m):
     # Math with anchors
     elif k == "Math" and v[0]['t'] == "DisplayMath":
         pos = v[1].find('#')
-        # Return math without changes
+        # Return math without changes if no anchor was found
         if pos == -1:
-            return {'t': k, 'c': v}
+            return
         # Return math inside an equation environment
         else:
             anchor = v[1][pos+1:].strip()
