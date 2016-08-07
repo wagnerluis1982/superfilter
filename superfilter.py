@@ -200,6 +200,17 @@ def do_filter(k, v, f, m):
         else:
             return pf.Cite(*v)
 
+    # Envolve codigos com caption no environment 'codigo'
+    elif k == "CodeBlock":
+        attrs = dict(v[0][2])
+        if "caption" in attrs:
+            objs = [latex(r'\begin{codigo}'), pf.CodeBlock(*v),
+                   latex(r'\caption{%s}' % attrs["caption"])]
+            if "label" in attrs:
+                objs.append(latex(r'\label{%s}' % attrs["label"]))
+            objs.append(latex(r'\end{codigo}'))
+            return objs
+
 
 # flags
 _ = do_filter
