@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import sys
 import re
 
 import pandocfilters as pf
@@ -74,7 +75,7 @@ def put_figure(uri, caption):
         options = parse_options(args)
 
     if star or options:
-        return [latex(r'\begin{figure%s}[ht]' '\n' r'\centering' % star),
+        return [latex(r'\begin{figure%s}[htbp]' '\n' r'\centering' % star),
                 put_image(uri, options),
                 put_caption(caption),
                 latex(r'\end{figure%s}' % star)]
@@ -130,7 +131,7 @@ def do_filter(k, v, f, m):
         if not _.is_figure:
             if value == '<[figures]':
                 _.is_figure = True
-                return latex(r'\begin{figure}[ht]' '\n' r'\centering')
+                return latex(r'\begin{figure}[tbp]' '\n' r'\centering')
         else:
             if value == '[figures]>':
                 _.is_figure = False
