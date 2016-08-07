@@ -99,6 +99,76 @@ def put_subfigures(images):
     return latex_join(output, '\n')
 
 
+def tbl_caption(s):
+    return pf.Para([inlatex(r'\caption{')] + s + [inlatex('}')])
+
+
+def tbl_alignment(s, h):
+    aligns = {
+        "AlignDefault": 'l',
+        "AlignLeft": 'l',
+        "AlignCenter": 'c',
+        "AlignRight": 'r',
+    }
+    params = []
+    for se, he in zip(s, h):
+        # last element at this column header title
+        try:
+            last = he[0]['c'][-1]
+        except IndexError:
+            last = {'t': None}
+        if last['t'] == "Str" and re.match(r'^\{.+?\}$', last['c']):
+            del he[0]['c'][-(1 + (he[0]['c'][-2]['t'] == "Space")):]
+            if re.match(r'^\{%s\}$' % RE_FLOAT, last['c']):
+                params.append('p' + last['c'][:-1] + r'\textwidth}')
+            else:
+                params.append('p' + last['c'])
+        else:
+            params.append(aligns[se['t']])
+    return ''.join(params)
+
+
+def tbl_headers(s):
+    try:
+        result = s[0][0]['c'][:]
+    except IndexError:
+        result = []
+    for i in range(1, len(s)):
+        result.append(inlatex(' & '))
+        try:
+            result.extend(s[i][0]['c'])
+        except IndexError:
+            pass
+    result.append(inlatex(r' \\\midrule'))
+    return pf.Para(result)
+
+
+def tbl_contents(s):
+    result = []
+    for row in s:
+        para = []
+        for col in row:
+            para.extend(col[0]['c'])
+            para.append(inlatex(' & '))
+        result.extend(para)
+        result[-1] = inlatex(r' \\' '\n')
+    return pf.Para(result)
+
+
+def has_table_option(cap, option):
+    return get_table_option(cap, option) is not None
+
+
+def get_table_option(cap, option):
+    if not (cap and cap[0]['t'] == "Str"):
+        return
+    s = cap[0]['c']
+    if s[0] == '{' and s[-1] == '}':
+        m = re.search(r'\b(%s)=?([^,]+)?\b' % option, s)
+        if m:
+            return m.group(2) or ''
+
+
 def split(s, sep, maxsplit):
     explode = s.split(sep, maxsplit)
     while len(explode) <= maxsplit:
@@ -199,6 +269,40 @@ def do_filter(k, v, f, m):
             return inlatex(r'\cite%s{%s}' % (kind, bibid))
         else:
             return pf.Cite(*v)
+
+    elif k == "Table":
+        cap = v[0]
+        # Coloca uma imagem como tabela
+        tbl_image = get_table_option(cap, 'from')
+        if tbl_image is not None:
+            cap.pop(0)
+            return [latex(r'\begin{table}[tbp]' '\n' r'\centering' '\n'),
+                    tbl_caption(cap),
+                    put_image(tbl_image, None),
+                    latex(r'\end{table}')]
+        # Usa longtable, mas a coloca na proxima pagina
+        if has_table_option(cap, 'longtable'):
+            cap.pop(0)
+            return [latex(r'\afterpage{'),
+                    pf.Table(*v),
+                    latex(r'}')]
+        # Coloca as tabelas em ambientes table comuns
+        elif len(sys.argv) > 1 and sys.argv[1] == "--table":
+            place = get_table_option(cap, 'place')
+            if place is not None:
+                cap.pop(0)
+            else:
+                place = 'tbp'
+            return [latex(r'\begin{table}[%s]' '\n'
+                          r'\centering' '\n' % place),
+                    tbl_caption(cap),
+                    latex(r'\begin{tabular}{@{}%s@{}}' %
+                        tbl_alignment(v[1], v[3]) +
+                        ('\n' r'\toprule')),
+                    tbl_headers(v[3]),
+                    tbl_contents(v[4]),
+                    latex(r'\bottomrule' '\n' r'\end{tabular}'),
+                    latex(r'\end{table}')]
 
     # Envolve codigos com caption no environment 'codigo'
     elif k == "CodeBlock":
