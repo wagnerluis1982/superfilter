@@ -1,34 +1,33 @@
 superfilter.py
 ==============
 
-Vários funcionalidades para ser usado no pandoc na geração de LaTeX.
+Several functionalities to be used on [pandoc](https://pandoc.org/) in the LaTeX generation.
 
-Modo de usar
-------------
+DISCLAIMER: this filter was originally created for pandoc v1.13.x. There is no guarantee it will work for latest versions.
 
-Para usar o `superfilter.py`, basta utilizar o parâmetro `--filter` no pandoc
-escolhendo o caminho do script
+Usage
+-----
 
-    $ pandoc --filter ./superfilter.py paper.mkd -o paper.pdf
+To use `superfilter.py`, it is only a matter of use the parameter `--filter` in the pandoc command line:
 
-Segue nas próximas seções o que o filtro pode fazer.
+    $ pandoc --filter /path/to/superfilter.py paper.mkd -o paper.pdf
 
-Imagens
--------
+Functionalities
+---------------
 
-Parâmetros para auxiliar na inclusão de imagens no texto.
+### Pictures
 
-### Imagens com a largura fixa
+Parameters to help the inclusion of images in the text.
 
-Para obter a largura fixa, escreve `|` (pipe) após o caminho da imagem e informa
-a largura. Assim, a declaração abaixo define que a imagem terá a largura de
-50mm. Qualquer outra unidade de medida compatível com o LaTeX é possível.
+#### Fixed-width images
+
+To get a fixed-width image, type `|` after the image path and provide the width. Thus, the declaration below defines that the image will have the width of 50mm. Any other LaTeX compatible unit of measure is possible.
 
 ```markdown
 ![Image caption](img/to_path.png | width=50mm)
 ```
 
-O código acima é convertido para o seguinte código LaTeX:
+The code above is converted to the following LaTeX code:
 
 ```latex
 \begin{figure}[ht]
@@ -38,18 +37,15 @@ O código acima é convertido para o seguinte código LaTeX:
 \end{figure}
 ```
 
-### Imagens com a largura dinâmica
+#### Dynamic width images
 
-Semelhante à largura fixa, mas não é informado a unidade de medida. A declaração
-abaixo define que a imagem terá a largura de 60% do espaço de texto atual.
-Utiliza a fração da `\linewidth`, de forma que funciona em textos de uma ou duas
-colunas.
+It is similar to the fixed-width, but the unit is not provided. The code below defines a image which will be 60% of the current text space. Makes use of fractions of `\linewidth`, so it works in one or two columns text.
 
 ```markdown
 ![Image caption](img/to_path.png | width=.6)
 ```
 
-O código acima converte-se no seguinte LaTeX:
+The code above converts to the following LaTeX:
 
 ```latex
 \begin{figure}[ht]
@@ -59,38 +55,32 @@ O código acima converte-se no seguinte LaTeX:
 \end{figure}
 ```
 
-Referência cruzada
-------------------
+### Cross References
 
-No LaTeX podemos fazer referências a praticamente qualquer elemento do texto,
-seja o número da seção, número da imagem, número da tabela ou o número da
-página. Fazemos isso usando âncoras, que definem uma marca no texto que então
-podem ser referenciadas em outro lugar por links de referência.
+LaTeX can make references to practically any element of the text, such as section number, image number, table number or the page itself. This is accomplished by using anchors, which define a tag in the text that can be referenced elsewhere by referral links.
 
-### Âncoras
+#### Anchors
 
-Para definir uma âncora, basta escrever a declaração abaixo em quase qualquer
-parte do texto.
+To define an anchor, just write the statement below in almost any part of the text.
 
 ```markdown
 <anchor:#sec:intro>
 ```
 
-Esse código se tornará em LaTeX o seguinte:
+This code will become the following LaTeX:
 
 ```latex
 \label{sec:intro}
 ```
 
-Para definir uma âncora em uma imagem, é preciso escrever a declaração dentro do
-caption, conforme exemplo abaixo.
+To define an anchor on an image, you need to write the declaration inside the caption, as shown below.
 
 ```markdown
 ![Image caption
 <anchor:#interesting>](img/to_path.png)
 ```
 
-No caso de tabelas, é semelhante:
+Similarly, you can add anchor to tables with the following:
 
 ```markdown
 Name    Phone
@@ -102,56 +92,47 @@ Table: Phone list
 <anchor:#phonelist>
 ```
 
-### Links de referência
+#### Referral links
 
-No LaTeX existem dois tipos de links de referência: um para os números das
-seções, figuras e tabelas, e outro para referenciar a página em que a âncora
-está definida.
+There are two types of reference links in LaTeX: one for the numbers of sections, figures and tables, and another to reference the page where the anchor is defined.
 
-Uma referência pode ser feita escrevendo o seguinte em quase qualquer parte.
+A reference can be made by writing the following almost anywhere in the text.
 
 ```markdown
 <ref:#sec:intro>
 ```
 
-Quando o filtro for aplicado vira em LaTeX:
+When the filter is applied it turns into LaTeX:
 
 ```latex
 \ref{sec:intro}
 ```
 
-Para referenciar a página, usamos a seguinte declaração.
+To reference the page, we use the following declaration.
 
 ```markdown
 <pageref:#sec:intro>
 ```
 
-Esse código se converte em LaTeX para:
+This code converts in LaTeX to:
 
 ```latex
 \pageref{sec:intro}
 ```
 
-Math
-----
+### Math
 
-Melhorias ao definir equações matemáticas.
+Improvements to write math equations.
 
-### Math com âncoras
+#### Math with anchors
 
-No pandoc, podemos definir uma equação em seu próprio parágrafo, porém essa
-equação não é numerada e nem é possível lhe definir uma âncora. Infelizmente não
-é possível utilizar a declaração `<anchor:#sec:intro>` dentro de uma equação
-porque será interpretado como matemática. Assim precisamos definir a seguinte
-notação especial.
+In pandoc, we can write equations in separate paragraphs, but these equations are not numbered and it is not even possible to set an anchor for it. Unfortunately it is not possible to use the `<anchor:#sec:intro>` declaration inside an equation because it will be interpreted as math. So we need to use the following special notation.
 
 ```markdown
 $$ t(n) = {n(n-1)\over{2}} #eq:graphs $$
 ```
 
-Com o código acima, será gerado o seguinte LaTeX. O ambiente `equation`
-garantirá que a equação será numerada e o `\label` que podemos referenciar esse
-número em outro lugar.
+With the code above, the following LaTeX will be generated. Notice the `equation` environment, this will ensure the equation to be numbered and with the `\label` we can reference that number elsewhere.
 
 ```latex
 \begin{equation}\label{eq:graphs}
@@ -159,47 +140,35 @@ número em outro lugar.
 \end{equation}
 ```
 
-Citações
---------
+### Citations
 
-Melhorias para auxiliar nas citações. Essas melhorias são direcionadas ao uso do
-pandoc com o parâmetro `--natbib` ou `--biblatex`, ou seja, não será usado o
-recurso de citação interno do pandoc.
+Improvements to work with citations. These improvements are aimed at using the pandoc with the `--natbib` or `--biblatex` parameter, so it will not be used the pandoc built-in citation engine.
 
-### Citações especiais
+#### Special citations
 
-Alguns pacotes de citações do LaTeX permitem citar, por exemplo, somente o autor
-ou somente o ano. Esse é o caso do pacote `biblatex` ou do `abntex2cite`.
-Geralmente esses comandos de citação especiais possuem nomes sugestíveis tais
-como `\citeauthor` ou `\citeyear`.
+Some LaTeX citation packages allow to cite only the author or the year. That is the case with the `biblatex` or `abntex2cite` package. Usually these special citation commands have suggestible names such as like `\citeauthor` or `\citeyear`.
 
-Levando isso em conta, com esse filtro, podemos utilizar as citações normais do
-pandoc, como `[@Wei91]`, mas também podemos adicionar um parâmetro
-indicando o nome desses comandos especiais, como `[@Wei91#author]`. O
-exemplo a seguir ilustra melhor o uso.
+Taking this into account, this filter allow to use the normal citations of the pandoc, like `[@Wei91]`, but we can also add an indication for the citation command, such as `[@Wei91#author]`. The following example illustrates the usage.
 
 ```markdown
-Conforme [@Wei91#author], no ano de [@Wei91#year], a computação ubíqua seria o
-futuro do mundo.
+According to [@Wei91#author], in the year of [@Wei91#year], ubiquitous computing
+will be the future of the world.
 ```
 
-O texto acima se converte para o seguinte LaTeX:
+The above text converts to the following LaTeX:
 
 ```latex
-Conforme \citeauthor{Wei91}, no ano de \citeyear{Wei91}, a computação ubíqua
-seria o futuro do mundo.
+According to \citeauthor{Wei91}, in the year of \citeyear{Wei91}, ubiquitous computing
+will be the future of the world.
 ```
 
-Beamer
-------
+### Beamer
 
-Melhorias para o *beamer*, o pacote LaTeX usado para criar apresentações.
+Improvements to *beamer*, the LaTeX package used to create presentations.
 
-### Colunas no beamer
+#### Columns in beamer
 
-Como o pandoc não disponibiliza nenhuma forma para definir colunas em um slide,
-então eu peguei emprestado a sintaxe do
-[wiki2beamer](http://wiki2beamer.sourceforge.net/) e permiti a definição abaixo.
+As pandoc doesn't provide any way to define columns in a slide, I borrowed the syntax from [wiki2beamer](http://wiki2beamer.sourceforge.net/) and added a way to write columns in the slides.
 
 ```markdown
 <[columns]
@@ -215,7 +184,7 @@ Content of the second column using 60% of width
 [columns]>
 ```
 
-Esse código é auto-explicativo e gerará o seguinte código LaTeX:
+This code is self-explanatory and will generate the following LaTeX code:
 
 ```latex
 \begin{columns}
